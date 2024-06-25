@@ -1,0 +1,167 @@
+/* styles.css */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 50px auto;
+    padding: 20px;
+    background: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2, h3 {
+    text-align: center;
+}
+
+#json-builder {
+    margin-bottom: 20px;
+}
+
+.json-field, .json-array {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    background: #f9f9f9;
+}
+
+.json-field label, .json-array label {
+    margin-right: 5px;
+}
+
+.json-field input, .json-array input {
+    margin: 5px 15px 5px 5px; /* Top, Right, Bottom, Left */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    flex: 1;
+    min-width: 150px; /* Ensuring minimum width for readability */
+}
+
+.json-field select {
+    margin: 5px 15px 5px 5px; /* Top, Right, Bottom, Left */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    flex: 1;
+    min-width: 100px; /* Ensuring minimum width for readability */
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    padding: 10px;
+    cursor: pointer;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="gray"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+}
+
+.array-var-type {
+    margin: 5px 10px 5px 5px; /* Top, Right, Bottom, Left */
+    padding: 8px; /* Reduced padding */
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    min-width: 75px; /* Smaller width */
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    padding: 5px;
+    cursor: pointer;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="gray"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 5px center;
+}
+
+.site-title {
+    margin-bottom: 0px;
+}
+
+.site-subtitle {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.array-name-input {
+    margin: 5px 15px 5px 5px; /* Top, Right, Bottom, Left */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    flex: 1;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin: 5px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.box {
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    background: #f9f9f9;
+}
+
+#output {
+    white-space: pre-wrap;
+    background: #e8e8e8;
+    padding: 20px;
+}
+
+/* Modal styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    border-radius: 10px;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
