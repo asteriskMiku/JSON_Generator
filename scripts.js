@@ -1,61 +1,63 @@
-// scripts.js
-
 function addField() {
     const builder = document.getElementById('json-builder');
     const field = document.createElement('div');
     field.className = 'json-field';
     field.innerHTML = `
-        <label>Key: </label>
-        <input type="text" placeholder="Key" class="json-key">
+        <label>Variable Name: </label>
+        <input type="text" placeholder="Variable Name" class="var-name">
         <label>Type: </label>
-        <select class="json-type" onchange="updateInputField(this)">
+        <select class="var-type" onchange="handleTypeChange(this)">
             <option value="string">String</option>
             <option value="number">Number</option>
             <option value="boolean">Boolean</option>
+            <option value="array">Array</option>
         </select>
-        <label>Value: </label>
-        <input type="text" placeholder="Value" class="json-value">
+        <input type="text" placeholder="Value" class="var-value">
         <button onclick="removeField(this)">Remove</button>
+        <button onclick="defineArray(this)" style="display: none;">Define Array</button>
     `;
     builder.appendChild(field);
 }
 
-function updateInputField(select) {
-    const valueInput = select.nextElementSibling.nextElementSibling;
-    if (select.value === "boolean") {
-        const booleanSelect = document.createElement('select');
-        booleanSelect.className = 'json-value';
-        booleanSelect.innerHTML = `
-            <option value="true">True</option>
-            <option value="false">False</option>
-        `;
-        valueInput.replaceWith(booleanSelect);
+function handleTypeChange(select) {
+    const valueInput = select.parentNode.querySelector('.var-value');
+    const defineArrayButton = select.parentNode.querySelector('button[onclick="defineArray(this)"]');
+    if (select.value === 'array') {
+        valueInput.style.display = 'none';
+        defineArrayButton.style.display = 'inline-block';
     } else {
-        const textInput = document.createElement('input');
-        textInput.type = 'text';
-        textInput.placeholder = 'Value';
-        textInput.className = 'json-value';
-        valueInput.replaceWith(textInput);
+        valueInput.style.display = 'inline-block';
+        defineArrayButton.style.display = 'none';
     }
 }
 
-function removeField(button) {
-    const field = button.parentElement;
-    field.remove();
+function defineArray(button) {
+    const field = button.parentNode;
+    const arrayBuilder = document.createElement('div');
+    arrayBuilder.className = 'json-array';
+    arrayBuilder.innerHTML = `
+        <div class="array-element-builder">
+            <div class="json-field">
+                <label>Variable Name: </label>
+                <input type="text" placeholder="Variable Name" class="array-var-name">
+                <label>Type: </label>
+                <select class="array-var-type">
+                    <option value="string">String</option>
+                    <option value="number">Number</option>
+                    <option value="boolean">Boolean</option>
+                </select>
+                <button onclick="removeArrayField(this)">Remove</button>
+            </div>
+        </div>
+        <button onclick="addArrayField(this)">Add Array Field</button>
+        <button onclick="finalizeArray(this)">Finalize Array</button>
+    `;
+    field.appendChild(arrayBuilder);
+    button.style.display = 'none';
 }
 
-function openArrayModal() {
-    const arrayModal = document.getElementById('array-modal');
-    arrayModal.style.display = 'block';
-}
-
-function closeArrayModal() {
-    const arrayModal = document.getElementById('array-modal');
-    arrayModal.style.display = 'none';
-}
-
-function addArrayField() {
-    const builder = document.getElementById('array-element-builder');
+function addArrayField(button) {
+    const builder = button.parentNode.querySelector('.array-element-builder');
     const field = document.createElement('div');
     field.className = 'json-field';
     field.innerHTML = `
@@ -72,147 +74,112 @@ function addArrayField() {
     builder.appendChild(field);
 }
 
-function removeArrayField(button) {
-    const field = button.parentElement;
-    field.remove();
-}
-
-let arrays = {};
-
-function addArray() {
-    const arrayName = document.getElementById('array-name').value;
-    if (!arrayName) {
-        alert('Please enter an array name');
-        return;
-    }
-
-    const varNames = document.getElementsByClassName('array-var-name');
-    const varTypes = document.getElementsByClassName('array-var-type');
-    let arrayStructure = [];
-
-    for (let i = 0; i < varNames.length; i++) {
-        let varName = varNames[i].value;
-        let varType = varTypes[i].value;
-        if (varName) {
-            arrayStructure.push({ name: varName, type: varType });
-        }
-    }
-
-    arrays[arrayName] = { structure: arrayStructure, elements: [] };
-
-    const arrayBuilder = document.getElementById('json-builder');
-    const arrayField = document.createElement('div');
-    arrayField.className = 'json-array box';
-    arrayField.innerHTML = `
-        <h3>${arrayName}</h3>
-        <button onclick="addArrayElement('${arrayName}')">Add Element</button>
-        <button onclick="removeArray(this, '${arrayName}')">Remove Array</button>
-        <div id="${arrayName}-element-inputs"></div>
-        <div id="${arrayName}-elements"></div>
-    `;
-    arrayBuilder.appendChild(arrayField);
-
-    closeArrayModal();
-}
-
-function addArrayElement(arrayName) {
-    const arrayInfo = arrays[arrayName];
-    const elementInputsDiv = document.getElementById(`${arrayName}-element-inputs`);
-    
-    const elementDiv = document.createElement('div');
-    elementDiv.className = 'json-field';
-    
-    arrayInfo.structure.forEach(field => {
-        const label = document.createElement('label');
-        label.textContent = `${field.name} (${field.type}): `;
-        elementDiv.appendChild(label);
-        if (field.type === 'boolean') {
-            const booleanSelect = document.createElement('select');
-            booleanSelect.className = 'array-element-input';
-            booleanSelect.innerHTML = `
-                <option value="true">True</option>
-                <option value="false">False</option>
-            `;
-            elementDiv.appendChild(booleanSelect);
-        } else {
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.placeholder = `${field.name} (${field.type})`;
-            input.className = 'array-element-input';
-            elementDiv.appendChild(input);
-        }
+function finalizeArray(button) {
+    const arrayBuilder = button.parentNode;
+    const arrayFields = [];
+    arrayBuilder.querySelectorAll('.json-field').forEach(el => {
+        const varName = el.querySelector('.array-var-name').value;
+        const varType = el.querySelector('.array-var-type').value;
+        arrayFields.push({ name: varName, type: varType });
     });
-    
-    const removeButton = document.createElement('button');
-    removeButton.textContent = 'Remove';
-    removeButton.onclick = function () {
-        elementDiv.remove();
-    };
-    elementDiv.appendChild(removeButton);
-    
-    elementInputsDiv.appendChild(elementDiv);
+    const parentField = arrayBuilder.parentNode;
+    const arrayData = { fields: arrayFields };
+    parentField.dataset.array = JSON.stringify(arrayData);
+    arrayBuilder.remove();
+    const defineArrayButton = parentField.querySelector('button[onclick="defineArray(this)"]');
+    defineArrayButton.style.display = 'none';
+    const valueInput = parentField.querySelector('.var-value');
+    valueInput.style.display = 'none';
+    parentField.insertAdjacentHTML('beforeend', `
+        <div class="array-values"></div>
+        <div class="array-buttons">
+            <button onclick="addArrayIndex(this)">Add Elements</button>
+        </div>
+    `);
+    addArrayIndex(parentField.querySelector('button[onclick="addArrayIndex(this)"]'));
 }
 
-function removeArray(button, arrayName) {
-    const arrayField = button.parentElement;
-    arrayField.remove();
-    delete arrays[arrayName];
+function addArrayIndex(button) {
+    const arrayData = JSON.parse(button.parentNode.parentNode.dataset.array);
+    const arrayValuesContainer = button.parentNode.previousElementSibling;
+    const indexContainer = document.createElement('div');
+    indexContainer.className = 'array-index';
+    indexContainer.innerHTML = `<h4>Index <span class="index-number">${arrayValuesContainer.children.length}</span> <button onclick="removeArrayIndex(this)">Remove</button></h4>`;
+    arrayData.fields.forEach(field => {
+        const valueField = document.createElement('div');
+        valueField.className = 'json-field';
+        valueField.innerHTML = `
+            <label>${field.name} (${field.type}): </label>
+            <input type="text" class="array-value" placeholder="Value">
+        `;
+        indexContainer.appendChild(valueField);
+    });
+    arrayValuesContainer.appendChild(indexContainer);
+    updateIndexNumbers(arrayValuesContainer);
+}
+
+function removeField(button) {
+    button.parentNode.remove();
+}
+
+function removeArrayField(button) {
+    button.parentNode.remove();
+}
+
+function removeArrayIndex(button) {
+    const arrayValuesContainer = button.parentNode.parentNode.parentNode;
+    button.parentNode.parentNode.remove();
+    updateIndexNumbers(arrayValuesContainer);
+}
+
+function updateIndexNumbers(arrayValuesContainer) {
+    const indexContainers = arrayValuesContainer.querySelectorAll('.array-index');
+    indexContainers.forEach((container, index) => {
+        container.querySelector('.index-number').textContent = index;
+    });
 }
 
 function generateJSON() {
-    const keys = document.getElementsByClassName('json-key');
-    const values = document.getElementsByClassName('json-value');
-    const types = document.getElementsByClassName('json-type');
-    let jsonObject = {};
-
-    for (let i = 0; i < keys.length; i++) {
-        let key = keys[i].value;
-        let valueElement = values[i];
-        let type = types[i].value;
-        let value;
-        if (type === 'boolean') {
-            value = valueElement.value === 'true';
-        } else if (type === 'number') {
-            value = parseFloat(valueElement.value);
-        } else {
-            value = valueElement.value;
-        }
-
-        if (key) {
-            jsonObject[key] = value;
-        }
-    }
-
-    for (const arrayName in arrays) {
-        const elementInputsDiv = document.getElementById(`${arrayName}-element-inputs`);
-        const elementDivs = elementInputsDiv.getElementsByClassName('json-field');
-        
-        arrays[arrayName].elements = [];
-        const arrayInfo = arrays[arrayName];
-        for (let i = 0; i < elementDivs.length; i++) {
-            const elementDiv = elementDivs[i];
-            const inputs = elementDiv.getElementsByClassName('array-element-input');
-            
-            let newElement = {};
-            arrayInfo.structure.forEach((field, index) => {
-                let valueElement = inputs[index];
-                let value;
-                if (field.type === 'boolean') {
-                    value = valueElement.value === 'true';
-                } else if (field.type === 'number') {
-                    value = parseFloat(valueElement.value);
-                } else {
-                    value = valueElement.value;
-                }
-                newElement[field.name] = value;
+    const fields = document.querySelectorAll('.json-field');
+    const jsonResult = {};
+    fields.forEach(field => {
+        const varNameInput = field.querySelector('.var-name');
+        if (!varNameInput) return;  // Skip if no var-name input
+        const varName = varNameInput.value;
+        const varType = field.querySelector('.var-type').value;
+        if (varType === 'array') {
+            const arrayData = JSON.parse(field.dataset.array);
+            const arrayIndexes = field.querySelectorAll('.array-index');
+            const arrayResult = [];
+            arrayIndexes.forEach(index => {
+                const indexValues = {};
+                index.querySelectorAll('.json-field').forEach(valueField => {
+                    const label = valueField.querySelector('label').textContent;
+                    const valueInput = valueField.querySelector('.array-value');
+                    const value = valueInput.value;
+                    const key = label.split(' (')[0];
+                    const fieldType = label.split(' (')[1].split(')')[0];
+                    if (fieldType === 'number') {
+                        indexValues[key] = parseFloat(value);
+                    } else if (fieldType === 'boolean') {
+                        indexValues[key] = !(value === '0' || value.toLowerCase() === 'false');
+                    } else {
+                        indexValues[key] = value;
+                    }
+                });
+                arrayResult.push(indexValues);
             });
-            
-            arrays[arrayName].elements.push(newElement);
+            jsonResult[varName] = arrayResult;
+        } else {
+            const varValue = field.querySelector('.var-value').value;
+            if (varType === 'number') {
+                jsonResult[varName] = parseFloat(varValue);
+            } else if (varType === 'boolean') {
+                jsonResult[varName] = !(varValue === '0' || varValue.toLowerCase() === 'false');
+            } else {
+                jsonResult[varName] = varValue;
+            }
         }
-        
-        jsonObject[arrayName] = arrays[arrayName].elements;
-    }
-
-    const output = document.getElementById('output');
-    output.textContent = JSON.stringify(jsonObject, null, 2);
+    });
+    document.getElementById('output').textContent = JSON.stringify(jsonResult, null, 2);
 }
